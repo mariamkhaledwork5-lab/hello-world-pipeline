@@ -5,16 +5,26 @@ on:
     branches:
       - production
 
+env:
+  PYTHON_VERSION: "3.12"
+  APP_FILE: "app.py"
+  APP_NAME: "Hello World Project"
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Run application
-        run: python app.py
+      - name: Display Project Name
+        run: echo "Building ${{ env.APP_NAME }}"
+
+      - name: Run Application
+        run: python ${{ env.APP_FILE }}
