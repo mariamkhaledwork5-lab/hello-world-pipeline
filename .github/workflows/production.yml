@@ -17,7 +17,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-              - name: Check Docker
+
+      # Step 2: Check that Docker is installed
+      - name: Check Docker
         run: docker --version
 
       - name: Setup Python
@@ -30,3 +32,11 @@ jobs:
 
       - name: Run Application
         run: python ${{ env.APP_FILE }}
+
+      # Step 3: Build the Docker image
+      - name: Build Docker Image
+        run: docker build -t hello-world-image .
+
+      # Show the images that exist after the build
+      - name: Show Docker Images
+        run: docker images
