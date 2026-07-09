@@ -21,10 +21,10 @@ permissions:
   contents: read
 
 env:
-  DOTNET_VERSION: "8.0.x"
-  SOLUTION_FILE: "DemoCICD.sln"
-  PROJECT_FILE: "DemoCICD/DemoCICD.csproj"
-  IMAGE_NAME: "merur1/hello-world-pipeline"
+  PYTHON_VERSION: "3.12"
+  APP_FILE: "app.py"
+  APP_NAME: "Hello World Project"
+  IMAGE_NAME: "merur1/hello-world-image"
 
 jobs:
   build:
@@ -34,19 +34,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Restore Dependencies
-        run: dotnet restore ${{ env.SOLUTION_FILE }}
-
-      - name: Build Project
-        run: dotnet build ${{ env.SOLUTION_FILE }} --configuration Release --no-restore
-
-      - name: Publish Project
-        run: dotnet publish ${{ env.PROJECT_FILE }} --configuration Release --output ./publish
+      - name: Run Python Application
+        run: python ${{ env.APP_FILE }}
 
       - name: Install jq
         run: |
@@ -109,7 +103,7 @@ jobs:
           docker build \
             -t ${{ env.IMAGE_NAME }}:${{ env.VERSION }} \
             -t ${{ env.IMAGE_NAME }}:latest \
-            ./DemoCICD
+            .
 
       - name: Show Docker Images
         run: docker images
@@ -124,7 +118,8 @@ jobs:
         run: |
           echo "======================================="
           echo "Docker Image Successfully Published!"
-          echo "Repository : ${{ env.IMAGE_NAME }}"
-          echo "Version    : ${{ env.VERSION }}"
-          echo "Latest Tag : latest"
+          echo "Application : ${{ env.APP_NAME }}"
+          echo "Repository  : ${{ env.IMAGE_NAME }}"
+          echo "Version     : ${{ env.VERSION }}"
+          echo "Latest Tag  : latest"
           echo "======================================="
