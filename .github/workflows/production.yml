@@ -10,7 +10,6 @@ env:
   APP_FILE: "app.py"
   APP_NAME: "Hello World Project"
   IMAGE_NAME: "merur1/hello-world-image"
-  IMAGE_TAG: "0.0.0"
 
 jobs:
   build:
@@ -19,6 +18,13 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Bump Version
+        id: version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
 
       - name: Check Docker
         run: docker --version
@@ -41,10 +47,13 @@ jobs:
         run: python ${{ env.APP_FILE }}
 
       - name: Build Docker Image
-        run: docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.new_tag }} .
 
       - name: Push Docker Image
-        run: docker push ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+        run: docker push ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.new_tag }}
 
       - name: Show Docker Images
         run: docker images
+
+      - name: Display New Version
+        run: echo "New Docker Image Version = ${{ steps.version.outputs.new_tag }}"
