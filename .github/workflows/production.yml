@@ -9,6 +9,8 @@ env:
   PYTHON_VERSION: "3.12"
   APP_FILE: "app.py"
   APP_NAME: "Hello World Project"
+  IMAGE_NAME: "hello-world-image"
+  IMAGE_TAG: "0.0.0"
 
 jobs:
   build:
@@ -18,7 +20,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Check that Docker is installed
       - name: Check Docker
         run: docker --version
 
@@ -33,10 +34,8 @@ jobs:
       - name: Run Application
         run: python ${{ env.APP_FILE }}
 
-      # Step 3: Build the Docker image
       - name: Build Docker Image
-        run: docker build -t hello-world-image .
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} .
 
-      # Show the images that exist after the build
       - name: Show Docker Images
         run: docker images
